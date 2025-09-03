@@ -10,7 +10,7 @@ Run the OnlineLife_TurnTheOxCorp.sh script in your favorite shell (such as [git 
 * No branching yet for prompts (i.e., there is only one storyline so far)
 
 ## Legal
-Free to use and modify as per the license file in this repository.
+Free to use, distribute, and modify as per the license file in this repository. User agrees to the software "as is" and uses it "at will".
 
 Created by Alexander Kidd for [TurnTheOx Corp](https://www.turntheox.com/)*
 
