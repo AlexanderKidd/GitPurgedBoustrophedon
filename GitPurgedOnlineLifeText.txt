@@ -1,8 +1,31 @@
+package.online.socials
+...loading lifepaths objects
+...loading followercounts objects
+WARNING: null operator (?) is redundant <line 45:5>
+WARNING: s.d is not 
+...loading module b
+EXCEPTION: Could not find object b.ss
+Stack trace:
+  _failure called from socials_script.sh:10
+  func_b called from socials_script.sh:30
+  func_a called from socials_script.sh:34
+  main called from socials_script.sh:37
+...loading module c
+EXCEPTION: Could not find object c.bou
+Stack trace:
+  _failure called from socials_script.sh:10
+  func_b called from socials_script.sh:30
+  func_a called from socials_script.sh:34
+  main called from socials_script.sh:37
+WARNING: null operator (?) is redundant <line 166:7>
+WARNING: potential infinite while loop closure <line 33:3>
+Runtime launched (code: 5)
+
 Welcome to your online life!
 
 A) Begin
 
-You've created an account and have 100 followers. But you want to belong to the fray! How are you getting more?
+You've created an account and have 100 followers, mostly from irl friends who care about you. But you want to belong to the fray! How are you getting more?
 
 A) Post your vacation last week
 B) Start liking and following friends of friends
@@ -10,7 +33,7 @@ C) I don't need validation
 
 ❌
 
-C. You suffer greatly from being out of the loop online. People get irritated you don't know the latest memes. -50 followers.
+C. You suffer greatly from being out of the loop online. People get irritated you don't know the latest memes (-50 followers).
 
 A) Post your vacation last week
 B) Buy 1k follower growth (-$100)
@@ -26,7 +49,7 @@ C) Ask a local business for sponsorship deal
 
 ❌
 
-C. All the local businesses you contact laugh at you (880 followers). To grow online, you're going to need to get desperate.
+C. All the local businesses you contact laugh at you. To grow online, you're going to need to get desperate (880 followers).
 
 A) Post accidental "thirst trap"
 B) Spill (fake) tea
@@ -34,4 +57,18 @@ C) Buy 10k follower growth (-$800)
 
 ❌
 
-C. Your investment pays off (+9,475 followers) but  (-10 followers).
+C. Your investment pays off (+9,475 followers) but some people are starting to call you fake (-100 followers and counting).
+
+A) Create an apology video
+B) Double-down and focus blame on another content creator with allegations
+C) Push a new, unproven product
+
+❌
+
+A. Unfortunately, buying and lying your way to the top didn't work this time. You have now ostracized many people on and offline despite your crocodile tears and positive videos (-4000 followers) and are bankrupt. You now wish to live peacefully and touch grass.
+
+A) Run command --git-purged on your profiles
+
+❌
+
+END
