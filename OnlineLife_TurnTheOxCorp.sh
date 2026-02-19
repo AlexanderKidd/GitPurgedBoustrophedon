@@ -71,92 +71,298 @@ show_demon() {
     done
 }
 
-# count=0
+# Show initial menu
+show_initial_menu() {
+    clear
+    
+    # Read and print all lines up to "Welcome to your online life!"
+    while IFS= read -r line; do
+        line=$(echo "$line" | tr -d '\r')
+        
+        if [[ "$line" == "Welcome to your online life!" ]]; then
+            break
+        fi
+        
+        if [[ ! -z "$line" ]]; then
+            echo -e "${RED}$line${RESET}"
+            # Random delay between 300ms and 1000ms
+            delay_ms=$(( (RANDOM % 301) + 50 ))
+            delay_s=$(printf "0.%03d" "$delay_ms")
+            sleep "$delay_s"
+        else
+            echo ""
+        fi
+    done < "$FILE"
+    
+    # 5 second pause
+    sleep 5
+    
+    # Print "Welcome to your online life!"
+    echo -e "${RED}Welcome to your online life!${RESET}"
+    echo ""
+    
+    # 3 second pause
+    sleep 3
+    
+    # Print A) Begin prompt
+    echo -e "${RED}A) Begin${RESET}"
+    echo ""
+    read -p ""
+}
 
-# # Open the file on file descriptor 3
-# exec 3<"$FILE"
+# Parse game file and extract scenes
+declare -A scenes
+declare -A scene_options
+declare -A scene_text
 
-# # Loop to read from file descriptor 3
-# while IFS= read -r line <&3; do
-#     # Remove any trailing carriage return characters (\r) from the line
-#     line=$(echo "$line" | tr -d '\r')
+parse_game_file() {
+    local current_scene=""
+    local current_text=""
+    local current_options=""
+    
+    while IFS= read -r line; do
+        line=$(echo "$line" | tr -d '\r')
+        
+        # Match [SCENE X] pattern
+        if [[ "$line" =~ ^\[SCENE\ ([0-9]+)\]$ ]]; then
+            # Save previous scene if exists
+            if [[ -n "$current_scene" ]]; then
+                scene_text["$current_scene"]="$current_text"
+                scene_options["$current_scene"]="$current_options"
+            fi
+            current_scene="${BASH_REMATCH[1]}"
+            current_text=""
+            current_options=""
+        # Match [SCENE END] pattern
+        elif [[ "$line" =~ ^\[SCENE\ END\]$ ]]; then
+            if [[ -n "$current_scene" ]]; then
+                scene_text["$current_scene"]="$current_text"
+                scene_options["$current_scene"]="$current_options"
+            fi
+            current_scene="END"
+            current_text=""
+            current_options=""
+        # Match GOTO pattern (options with consequences)
+        elif [[ "$line" =~ ^GOTO ]]; then
+            if [[ -n "$current_options" ]]; then
+                current_options+=$'\n'"$line"
+            else
+                current_options="$line"
+            fi
+        # Match option lines (A), B), C))
+        elif [[ "$line" =~ ^[ABC]\) ]]; then
+            if [[ -n "$current_text" ]]; then
+                current_text+=$'\n'"$line"
+            else
+                current_text="$line"
+            fi
+        # Regular scene text or blank lines
+        elif [[ -n "$current_scene" ]]; then
+            if [[ -n "$current_text" ]]; then
+                current_text+=$'\n'"$line"
+            else
+                current_text="$line"
+            fi
+        fi
+    done < "$FILE"
+    
+    # Save last scene
+    if [[ -n "$current_scene" ]]; then
+        scene_text["$current_scene"]="$current_text"
+        scene_options["$current_scene"]="$current_options"
+    fi
+}
 
-#     # Check for the word END to stop the story
-#     if [[ "$line" == "END" ]]; then
-#         break
-#     fi
+# Extract ALL follower changes from text and sum them
+get_follower_change() {
+    local line="$1"
+    local total=0
+    local remaining="$line"
+    
+    # Loop through and find all instances of (+X followers) or (-X followers)
+    while [[ "$remaining" =~ \(([+-][0-9]+)[[:space:]]*followers\) ]]; do
+        total=$((total + ${BASH_REMATCH[1]}))
+        # Remove the matched portion and continue searching
+        remaining="${remaining#*${BASH_REMATCH[0]}}"
+    done
+    
+    echo "$total"
+}
 
-#     # Random delay between 250ms and 1000ms
-#     delay_ms=$(( (RANDOM % 751) + 250 ))
-#     delay_s=$(printf "0.%03d" "$delay_ms")
-#     sleep "$delay_s"
+# Get next scene based on user choice
+get_next_scene() {
+    local options="$1"
+    local choice="$2"
+    local emotion=""
+    
+    # Find the line that matches the user's choice
+    while IFS= read -r option_line; do
+        # Match the GOTO line and the choice (A, B, or C)
+        if [[ "$option_line" =~ GOTO\ SCENE\ ([A-Z0-9]+)\ ([❌✅])\ ([ABC])\.(.*)$ ]]; then
+            local next_scene="${BASH_REMATCH[1]}"
+            local emoji="${BASH_REMATCH[2]}"
+            local opt="${BASH_REMATCH[3]}"
+            local result_text="${BASH_REMATCH[4]}"
+            
+            if [[ "$opt" == "$choice" ]]; then
+                emotion="$emoji"
+                local followers_change=$(get_follower_change "$option_line")
+                # Trim leading space from result_text
+                result_text=${result_text:1}
+                echo "$next_scene|$emotion|$followers_change|$result_text"
+                return
+            fi
+        fi
+    done <<< "$options"
+}
 
-#     # Handle the choice block and wait for a newline
-#     if [[ "$line" =~ ^[ABC]\) ]]; then
-#         typewriter_print "$line" "$RED" "0.05"
-#         # Start a loop to print all subsequent lines until a blank one
-#         while IFS= read -r inner_line <&3; do
-#             # Remove any trailing carriage return characters (\r) from the inner line
-#             inner_line=$(echo "$inner_line" | tr -d '\r')
-#             if [[ -z "$inner_line" ]]; then
-#                 # Found the blank line, print it and wait for input
-#                 echo ""
-#                 read -p ""
-#                 break # Exit the inner loop
-#             else
-#                 # Print the line and continue
-#                 typewriter_print "$inner_line" "$RED" "0.05"
-#             fi
-#         done
-#         continue # Skip the rest of the outer loop for this iteration
-#     fi
+# Print scene with follower count in top right
+print_scene() {
+    local scene_num="$1"
+    local followers="$2"
+    local last_result="$3"
+    
+    clear
+    
+    # Get terminal width
+    local cols=$(tput cols)
+    local follower_text="$followers Followers"
+    local padding=$((cols - ${#follower_text}))
+    
+    # Print followers in top right (in red)
+    printf "${RED}%${padding}s${RESET}\n" "$follower_text"
+    echo ""
+    
+    # Print last result text if available
+    if [[ -n "$last_result" ]]; then
+        echo -e "${RED}$last_result${RESET}"
+        echo ""
+    fi
+    
+    # Print scene text and options (skip GOTO lines)
+    local text="${scene_text[$scene_num]}"
+    local first_option=true
+    while IFS= read -r line; do
+        if [[ ! "$line" =~ ^GOTO ]]; then
+            typewriter_print "$line" "$RED" "0.02"
+        fi
+    done <<< "$text"
+}
 
-#     # Handle other line types
-#     case "$line" in
-#         "❌")
-#             show_demon
-#             ;;
-#         "✅")
-#             show_happy_demon
-#             ;;
-#         *)
-#             if [ $count -lt 22 ]; then
-#                 echo -e "${RED}${line}${RESET}"
-#             fi
-#             if [ $count -eq 22 ]; then
-#                 clear
-#             fi
-#             if [ $count -gt 22 ]; then
-#                 typewriter_print "$line" "$RED" "0.05"
-#             fi
-#             ;;
-#     esac
+# Main game loop
+main() {
+    show_initial_menu
+    
+    # Parse the game file
+    parse_game_file
+    
+    # Start at scene 1 with 100 followers
+    local current_scene="1"
+    local followers=100
+    local last_result_text=""
+    
+    while true; do
+        # Check if at END scene
+        if [[ "$current_scene" == "END" ]]; then
+            print_scene "END" "$followers" "$last_result_text"
+            echo ""
+            read -p ""
+            break
+        fi
+        
+        # Check if followers depleted
+        if (( followers <= 0 )); then
+            # Show END scene
+            print_scene "END" "0" "$last_result_text"
+            echo ""
+            break
+        fi
+        
+        # Print current scene with last result text
+        print_scene "$current_scene" "$followers" "$last_result_text"
+        
+        # Reset result text for next scene
+        last_result_text=""
+        
+        # Get valid options from scene
+        local options_text="${scene_options[$current_scene]}"
+        local valid_choices_str=""
+        
+        # Parse valid choices from options
+        while IFS= read -r option_line; do
+            if [[ "$option_line" =~ GOTO\ SCENE\ [A-Z0-9]+\ [❌✅]\ ([ABC])\. ]]; then
+                choice_letter="${BASH_REMATCH[1]}"
+                if [[ -z "$valid_choices_str" ]]; then
+                    valid_choices_str="$choice_letter"
+                else
+                    valid_choices_str="$valid_choices_str $choice_letter"
+                fi
+            fi
+        done <<< "$options_text"
+        
+        # Prompt user for choice
+        read -p "Choose ($valid_choices_str): " user_choice
+        user_choice=${user_choice^^}  # Convert to uppercase
+        
+        # Validate choice
+        if [[ ! "$valid_choices_str" =~ $user_choice ]]; then
+            echo "Invalid choice. Please try again."
+            sleep 1
+            continue
+        fi
+        
+        # Get next scene, emotion, followers_change, and result text
+        local result=$(get_next_scene "$options_text" "$user_choice")
+        IFS='|' read -r next_scene emotion followers_change result_text <<< "$result"
+        
+        # Show appropriate demon face
+        if [[ "$emotion" == "✅" ]]; then
+            show_happy_demon
+        elif [[ "$emotion" == "❌" ]]; then
+            show_demon
+        fi
+        
+        # Print the result text to keep it visible
+        if [[ -n "$result_text" ]]; then
+            echo -e "${RED}$result_text${RESET}"
+            last_result_text="$result_text"
+        fi
+        
+        # Apply follower changes
+        followers=$((followers + followers_change))
+        
+        # Check if followers depleted after choice
+        if (( followers <= 0 )); then
+            followers=0  # Ensure it doesn't go negative
+        fi
+        
+        # Move to next scene
+        current_scene="$next_scene"
+    done
+}
 
-#     ((count++))
-# done
-
-# Close file descriptor 3
-# exec 3>&-
+main
 
 clear
 
 echo -e "${RED} --git-purged command not found. ${RESET}"
 
-sleep .3
+sleep 3
 clear
 
 while true
 do
-    rand=$(( ( RANDOM % 30 )  + 1 ))
+    rand=$(( ( RANDOM % 100 )  + 1 ))
+    if (( rand % 100 <= 95 )); then
+        echo -e "${RED} Do not exit ${RESET}"
+    fi
     if (( rand % 30 == 0 )); then
         echo -e "${RED}YOU CANNOT EXIT ${RESET}"
         echo -e "${RED} YOU CANNOT EXIT ${RESET}"
-        echo -e "${RED} YOU CANNOT EXIT ${RESET}"
+        echo -e "${RED}  YOU CANNOT EXIT ${RESET}"
     fi
-    if (( rand % 20 == 0 )); then
+    if (( rand % 100 > 95 )); then
     	show_demon
     fi
-    if (( rand % 30 != 0 )); then
-        echo -e "${RED} Do not exit ${RESET}"
-    fi
+    sleep 0.1
 done

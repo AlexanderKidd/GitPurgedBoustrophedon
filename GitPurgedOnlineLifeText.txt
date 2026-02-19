@@ -2,7 +2,8 @@ package.online.socials
 ...loading lifepaths objects
 ...loading followercounts objects
 WARNING: null operator (?) is redundant <line 45:5>
-WARNING: s.d is not 
+WARNING: s.d is not set
+WARNING: s.ox not set
 ...loading module b
 EXCEPTION: Could not find object b.ss
 Stack trace:
@@ -11,7 +12,7 @@ Stack trace:
   func_a called from socials_script.sh:34
   main called from socials_script.sh:37
 ...loading module c
-EXCEPTION: Could not find object c.bou
+EXCEPTION: Could not find object c.boustroph
 Stack trace:
   _failure called from socials_script.sh:10
   func_b called from socials_script.sh:30
@@ -19,56 +20,68 @@ Stack trace:
   main called from socials_script.sh:37
 WARNING: null operator (?) is redundant <line 166:7>
 WARNING: potential infinite while loop closure <line 33:3>
-Runtime launched (code: 5)
+Runtime launched (code: 5 TTO_CLOSURE_EXCEPTION)
+
+TURN THE OX INDUSTRIES © 2026
+Release 0.0 / SN 20506730
+
 
 Welcome to your online life!
 
 A) Begin
 
+[SCENE 1]
 You've created an account and have 100 followers, mostly from irl friends who care about you. But you want to belong to the fray! How are you getting more?
-
 A) Post your vacation last week
 B) Start liking and following friends of friends
 C) I don't need validation
 
-❌
+GOTO SCENE 2 ✅ A. Your friends are generally happy for you, not enough to statistically have major jealousy at least.
+GOTO SCENE 2 ✅ B. Your mutuals seem to respond well. (+50 followers)
+GOTO SCENE 2 ❌ C. You suffer greatly from being out of the loop online. People get irritated you don't know the latest memes. (-50 followers)
 
-C. You suffer greatly from being out of the loop online. People get irritated you don't know the latest memes (-50 followers).
-
-A) Post your vacation last week
-B) Buy 1k follower growth (-$100)
+[SCENE 2]
+A) Post your trip to the cabin from this past weekend
+B) Buy 1k follower growth
 C) Wait a day
 
-✅
+GOTO SCENE 3 ❌ A. The photo doesn't do as well, and you feel embarrassed. Plus you've alienated some friends who usually go on the trip with you. (-5 Followers)
+GOTO SCENE 3 ✅ B. Your investment pays off (+840 followers) but at a cost of a few jealous irl friends. (-10 followers)
+GOTO SCENE 3 ✅ C. You wait a day. Life goes on.
 
-B. Your investment pays off (+840 followers) but at a cost of a few jealous irl friends (-10 followers).
-
+[SCENE 3]
 A) Reconnect with irl friends
 B) Buy another 1k follower growth
 C) Ask a local business for sponsorship deal
 
-❌
+GOTO SCENE 4 ✅ A. Your friends appreciate it and you meet their new friends (+3 followers). You feel good about yourself, but some of them shade you for playing the social media game (-5 followers).
+GOTO SCENE 5 ✅ B. Your portfolio grows significantly. (+1200 followers)
+GOTO SCENE 4 ❌ C. All the local businesses you contact laugh at you. To grow online, you are going to need to get desperate. (-50 followers)
 
-C. All the local businesses you contact laugh at you. To grow online, you're going to need to get desperate (880 followers).
-
+[SCENE 4]
 A) Post accidental "thirst trap"
 B) Spill (fake) tea
-C) Buy 10k follower growth (-$800)
+C) Buy 10k follower growth
 
-❌
+GOTO SCENE 5 ✅ A. It gets shared around. People think you are relatable. (+200 followers)
+GOTO SCENE 5 ❌ B. Some people get upset (-100 followers) but others love the drama (+100 followers).
+GOTO SCENE 5 ❌ C. Your investment pays off, but not fruitful as you would hope. (+900 followers)
 
-C. Your investment pays off (+9,475 followers) but some people are starting to call you fake (-100 followers and counting).
+❌ C. Your investment pays off (+9,475 followers) but some people are starting to call you fake. (-100 followers)
 
+[SCENE 5]
 A) Create an apology video
 B) Double-down and focus blame on another content creator with allegations
 C) Push a new, unproven product
 
-❌
+GOTO SCENE END ❌ A. Unfortunately, buying and lying your way to the top didn't work this time. You have now ostracized many people on and offline despite your crocodile tears and positive videos and are bankrupt. (-4000 followers)
+GOTO SCENE END ❌ B. This does not please the fanbase. (-700 followers)
+GOTO SCENE END ❌ C. The product ends up causing several cases of rashes, and is overpriced. (-800 followers)
 
-A. Unfortunately, buying and lying your way to the top didn't work this time. You have now ostracized many people on and offline despite your crocodile tears and positive videos (-4000 followers) and are bankrupt. You now wish to live peacefully and touch grass.
+[SCENE END]
+AN ECONOMY OF FINGERS, COMES CRASHING DOWN SOME DAY  :p
 
+You've ran out of followers. The price of influence has weighed heavily on you. You now wish to live peacefully and touch grass. 🌳
 A) Run command --git-purged on your profiles
 
-❌
-
-END
+❌ END
