@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Life: Turn The Ox Corp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ff0000;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #game-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #follower-count {
+            text-align: right;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #ff0000;
+        }
+
+        #scene-content {
+            flex: 1;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+            font-family: 'Courier New', monospace;
+        }
+
+        .scene-text {
+            margin: 0;
+            min-height: 1.6em;  /* Preserve blank lines with proper spacing */
+        }
+
+        .option {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 2px solid #ff0000;
+            padding-left: 10px;
+        }
+
+        .result-text {
+            color: #ff0000;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        #choices-container {
+            margin: 20px 0;
+            padding: 10px 0;
+        }
+
+        .choice-button {
+            display: none;
+        }
+
+        #demon-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            margin: 20px 0;
+            color: #ff0000;
+            white-space: pre;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .demon-text {
+            text-align: center;
+        }
+
+        .happy {
+            color: #00ff00;
+        }
+
+        .sad {
+            color: #ff0000;
+        }
+
+        .end-loop-text {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        input[type="text"] {
+            background-color: #000000;
+            color: #ff0000;
+            border: none;
+            padding: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            width: 200px;
+            margin: 0;
+            margin-left: 5px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background-color: #ff0000;
+            margin-left: 5px;
+            animation: blink 1s step-start infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0;
+            }
+        }
+
+        .prompt {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .prompt-text {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="follower-count"></div>
+        <div id="scene-content"></div>
+        <div id="demon-container"></div>
+        <div id="result-container"></div>
+        <div id="choices-container"></div>
+        <div id="end-loop"></div>
+    </div>
+
+    <script>
+        // ============================================
+        // GAME CONTENT - Easy to Edit
+        // ============================================
+        // Simply update the text between the backticks below
+        // Keep the [SCENE X] markers and GOTO lines intact
+        // ============================================
+        
+        const gameContent = `package.online.socials
+...loading lifepaths objects
+...loading followercounts objects
+WARNING: null operator (?) is redundant <line 45:5>
+WARNING: s.d is not set
+WARNING: s.ox not set
+...loading module b
+EXCEPTION: Could not find object b.ss
+Stack trace:
+  _failure called from socials_script.sh:10
+  func_b called from socials_script.sh:30
+  func_a called from socials_script.sh:34
+  main called from socials_script.sh:37
+...loading module c
+EXCEPTION: Could not find object c.boustroph
+Stack trace:
+  _failure called from socials_script.sh:10
+  func_b called from socials_script.sh:30
+  func_a called from socials_script.sh:34
+  main called from socials_script.sh:37
+WARNING: null operator (?) is redundant <line 166:7>
+WARNING: potential infinite while loop closure <line 33:3>
+Runtime launched (code: 5 TTO_CLOSURE_EXCEPTION)
+
+TURN THE OX CORP © 2026
+
+Release 0.0 / SN 20506730
+
+
+Welcome to your online life!
+
+A) Begin
+
+[SCENE 1]
+You've created an account and have 100 followers, mostly from irl friends who care about you. But you want to belong to the fray! How are you getting more?
+A) Post your vacation last week
+B) Start liking and following friends of friends
+C) I don't need validation
+
+GOTO SCENE 2 ✅ A. Your friends are generally happy for you, not enough to statistically have major jealousy at least.
+GOTO SCENE 2 ✅ B. Your mutuals seem to respond well. (+50 Followers)
+GOTO SCENE 2 ❌ C. You suffer greatly from being out of the loop online. People get irritated you don't know the latest memes. (-50 Followers)
+
+[SCENE 2]
+A) Post your trip to the cabin from this past weekend
+B) Buy 1k follower growth
+C) Wait a day
+
+GOTO SCENE 3 ❌ A. The photo doesn't do as well, and you feel embarrassed. Plus you've alienated some friends who usually go on the trip with you. (-5 Followers)
+GOTO SCENE 3 ✅ B. Your investment pays off (+840 Followers) but at a cost of a few jealous irl friends. (-10 Followers)
+GOTO SCENE 3 ✅ C. You wait a day. Life goes on.
+
+[SCENE 3]
+A) Reconnect with irl friends
+B) Buy another 1k follower growth
+C) Ask a local business for sponsorship deal
+
+GOTO SCENE 4 ✅ A. Your friends appreciate it and you meet their new friends (+3 Followers). You feel good about yourself, but some of them shade you for playing the social media game (-5 Followers).
+GOTO SCENE 5 ✅ B. Your portfolio grows significantly. (+1200 Followers)
+GOTO SCENE 4 ❌ C. All the local businesses you contact laugh at you. To grow online, you are going to need to get desperate. (-50 Followers)
+
+[SCENE 4]
+A) Post accidental "thirst trap"
+B) Spill (fake) tea
+C) Buy 10k follower growth
+
+GOTO SCENE 5 ✅ A. It gets shared around. People think you are relatable. (+200 Followers)
+GOTO SCENE 5 ❌ B. Some people get upset (-100 Followers) but others love the drama (+100 Followers).
+GOTO SCENE 5 ❌ C. Your investment pays off, but not fruitful as you would hope. (+900 Followers)
+
+[SCENE 5]
+A) Create an apology video
+B) Double-down and focus blame on another content creator with allegations
+C) Push a new, unproven product
+
+GOTO SCENE END ❌ A. Unfortunately, buying and lying your way to the top didn't work this time. You have now ostracized many people on and offline despite your crocodile tears and positive videos and are bankrupt. (-4000 Followers)
+GOTO SCENE END ❌ B. This does not please the fanbase. (-700 Followers)
+GOTO SCENE END ❌ C. The product ends up causing several cases of rashes, and is overpriced. (-800 Followers)
+
+[SCENE END]
+AN ECONOMY OF FINGERS, COMES CRASHING DOWN SOME DAY  :p
+
+You've ran out of followers. The price of influence has weighed heavily on you. You now wish to live peacefully and touch grass. 🌳
+A) Run command --git-purged on your profiles
+
+`;
+
+        // Demon face ASCII art from files
+        const DEMON_FACE = `⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⢸⣄⠀⠀⠀⠀⠀⠀⠀⠀            ⠀⠀   ⠀⠀⠀⠀⠀⠀⠀⣠⠂
+⠀⣿⣧⣀⡀⠀⠀⠀⠀⠀⠀             ⠀⠀⠀⠀⠀⠀⢀⣀⣴⣿⠀
+⠀⣿⣿⣿⣿⣿⣷⣶⣤⣤⠀⢸⣿⣿⣿⣿⣿⣿⡇⠀⣠⣤⣶⣶⣿⣿⣿⣿⡟⠀
+⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀
+⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀
+⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀⠀
+⠀⠀⣧⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀
+⠀⠀⣿⣿⣿⣿⣄⠈⠉    ⢿⣿⣿⣿⡿      ⣿⣿⣿⣿⣿⠀
+⠀⠀⣿⣿⣿⣿⣿⣷⣿⣿ ⠀⢠⣿⣿⣿⣧  ⣿⣿⣴⣿⣿⣿⣿⣿⡇⠀⠀
+⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⠇⠀⠀
+⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⠙⡀ ⠁⠁⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀
+⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⢿⠀⠀⣿⣿⣿⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿
+    ⣿⣿⣿⣿⣿⣿⠀⠀⣿⣿⣿⣿⣿⣿⣿ ⣿⣿⣿⣿⣿⣿
+⠀⠀⠘⠿⣿⣿⣿⣿⡀⠻⣿⣿⣿⣿⣿⣿⣿⣿⣾⡀⡀⣿⣿⣿⠏⠀⠀⠀
+⠀⠀⠀⠀⠀⠉⠙⠻ ⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ ⠟⠋⠁⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠛⠦⣿⣿⣿⣿⣿⠞⠋⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
+
+        const HAPPY_DEMON_FACE = `⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⢸⣄⠀⠀⠀⠀⠀⠀⠀⠀            ⠀⠀   ⠀⠀⠀⠀⠀⠀⠀⣠⠂
+⠀⣿⣧⣀⡀⠀⠀⠀⠀⠀⠀             ⠀⠀⠀⠀⠀⠀⢀⣀⣴⣿⠀
+⠀⣿⣿⣿⣿⣿⣷⣶⣤⣤⠀⢸⣿⣿⣿⣿⣿⣿⡇⠀⣠⣤⣶⣶⣿⣿⣿⣿⡟⠀
+⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀
+⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀
+⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀⠀
+⠀⠀⣧⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀
+⠀⠀⣿⣿⣿⣿⣄⠈⠉⠛⠛⠿⢿⣷⣄⣴⣾⡿⠿⠟⠛⠉⢉⣿⣿⣿⠀⠀
+⠀⠀⣿⣷⡄⠘⢿⣷⣄⠀⠀⠀⢠⣿⣿⣿⣧⠀⠀⠀⢀⣴⣿⡟⠁⣰⣿⡇⠀⠀
+⠀⠀⢻⣿⣿⣦⠈⢻⣿⣷⣄⢀⣿⣿⣿⣿⣿⣧⠀⣰⣿⣿⠏⢀⣾⣿⣿⠇⠀⠀
+⠀⠀⢸⣿⣿⣿⣷⡀⠙⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⣠⣿⣿⣿⣿⠀⠀⠀
+⠀⠀⢸⣿⣿⣿⣿⣿⣄⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⠟⢀⣴⣿⣿⣿⣿⣿
+     ⣿⣿⣿⣿⣿⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿ ⣿⣿⣿⣿⣿⣿
+⠀⠀⠘⠿⣿⣿⣿⣿⣿⣧⡀⠻⣿⣿⣿⣿⣿⡿⠃⢠⣾⣿⣿⣿⣿⣿⠏⠀⠀⠀
+⠀⠀⠀⠀⠀⠉⠙⠻⢿⣿⣷⡄⠘⢿⣿⣿⠟⠀⣴⣿⣿⠿⠟⠋⠁⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠛⠦⠈⠻⠋⠀⠞⠋⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
+
+        // Game State
+        let sceneText = {};
+        let sceneOptions = {};
+        let gameState = {
+            currentScene: '1',
+            followers: 100,
+            lastResultText: ''
+        };
+
+        // Utility Functions
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('game-container');
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 0);
+        }
+
+        async function typewriterEffect(text, parentElement, delayMs = 50) {
+            const p = document.createElement('div');
+            p.className = 'scene-text';
+            p.style.whiteSpace = 'pre-wrap';
+            parentElement.appendChild(p);
+            
+            for (let i = 0; i < text.length; i++) {
+                p.textContent += text[i];
+                await sleep(delayMs);
+            }
+            
+            scrollToBottom();
+        }
+
+        function extractFollowerChanges(text) {
+            const regex = /\(([+-]\d+)\s*Followers\)/g;
+            let total = 0;
+            let match;
+            
+            while ((match = regex.exec(text)) !== null) {
+                total += parseInt(match[1]);
+            }
+            
+            return total;
+        }
+
+        function parseGameFile() {
+            const lines = gameContent.split('\n');
+            
+            let currentScene = '';
+            let currentText = '';
+            let currentOptions = '';
+            
+            lines.forEach(line => {
+                const sceneMatch = line.match(/^\[SCENE\s+(\d+)\]$/);
+                const endMatch = line.match(/^\[SCENE\s+END\]$/);
+                const gotoMatch = line.match(/^GOTO/);
+                const optionMatch = line.match(/^[ABC]\)/);
+                
+                if (sceneMatch) {
+                    if (currentScene) {
+                        sceneText[currentScene] = currentText;
+                        sceneOptions[currentScene] = currentOptions;
+                    }
+                    currentScene = sceneMatch[1];
+                    currentText = '';
+                    currentOptions = '';
+                } else if (endMatch) {
+                    if (currentScene) {
+                        sceneText[currentScene] = currentText;
+                        sceneOptions[currentScene] = currentOptions;
+                    }
+                    currentScene = 'END';
+                    currentText = '';
+                    currentOptions = '';
+                } else if (gotoMatch) {
+                    currentOptions += (currentOptions ? '\n' : '') + line;
+                } else if (optionMatch) {
+                    currentText += (currentText ? '\n' : '') + line;
+                } else if (currentScene) {
+                    currentText += (currentText ? '\n' : '') + line;
+                }
+            });
+            
+            if (currentScene) {
+                sceneText[currentScene] = currentText;
+                sceneOptions[currentScene] = currentOptions;
+            }
+        }
+
+        function getNextScene(optionsText, choice) {
+            const lines = optionsText.split('\n');
+            
+            for (const line of lines) {
+                const match = line.match(/GOTO\s+SCENE\s+([A-Z0-9]+)\s+([\u274c\u2705])\s+([ABC])\.(.*)$/);
+                if (match) {
+                    const nextScene = match[1];
+                    const emoji = match[2];
+                    const opt = match[3];
+                    let resultText = match[4].trim();
+                    
+                    if (opt === choice) {
+                        const followersChange = extractFollowerChanges(line);
+                        return {
+                            nextScene,
+                            emoji,
+                            followersChange,
+                            resultText
+                        };
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        async function showDemon(isHappy = false) {
+            const face = isHappy ? HAPPY_DEMON_FACE : DEMON_FACE;
+            const color = isHappy ? 'happy' : 'sad';
+            
+            // Clear the screen and show only the demon
+            const container = document.getElementById('game-container');
+            container.innerHTML = '';
+            
+            const demonContainer = document.createElement('div');
+            demonContainer.id = 'demon-container';
+            container.appendChild(demonContainer);
+            
+            for (let i = 0; i < 5; i++) {
+                demonContainer.innerHTML = `<div class="demon-text ${color}">${face}</div>`;
+                await sleep(50);
+                demonContainer.innerHTML = '';
+                await sleep(50);
+            }
+            
+            demonContainer.innerHTML = '';
+        }
+
+        async function printScene(sceneNum, followers, lastResult) {
+            // Clear content
+            const container = document.getElementById('game-container');
+            container.innerHTML = '';
+            
+            // Recreate the structure
+            const followerDiv = document.createElement('div');
+            followerDiv.id = 'follower-count';
+            container.appendChild(followerDiv);
+            
+            // Result text comes right after follower count
+            const resultDiv = document.createElement('div');
+            resultDiv.id = 'result-container';
+            container.appendChild(resultDiv);
+            
+            const sceneDiv = document.createElement('div');
+            sceneDiv.id = 'scene-content';
+            container.appendChild(sceneDiv);
+            
+            const demonDiv = document.createElement('div');
+            demonDiv.id = 'demon-container';
+            container.appendChild(demonDiv);
+            
+            const choicesDiv = document.createElement('div');
+            choicesDiv.id = 'choices-container';
+            container.appendChild(choicesDiv);
+            
+            const endLoopDiv = document.createElement('div');
+            endLoopDiv.id = 'end-loop';
+            container.appendChild(endLoopDiv);
+            
+            // Update follower count with typewriter effect
+            await typewriterEffect(followers + ' Followers', followerDiv, 30);
+            
+            // Print last result if available with typewriter
+            if (lastResult) {
+                const resultText = document.createElement('div');
+                resultText.className = 'result-text';
+                resultDiv.appendChild(resultText);
+                
+                // Use typewriter for result text
+                for (let i = 0; i < lastResult.length; i++) {
+                    resultText.textContent += lastResult[i];
+                    await sleep(30);
+                }
+                scrollToBottom();
+            }
+            
+            // Print scene text (preserving newlines as blank lines) with typewriter
+            const text = sceneText[sceneNum] || '';
+            const lines = text.split('\n');
+            
+            for (const line of lines) {
+                if (!line.match(/^GOTO/)) {
+                    const p = document.createElement('div');
+                    p.className = 'scene-text';
+                    p.style.whiteSpace = 'pre-wrap';  // Preserve whitespace
+                    sceneDiv.appendChild(p);
+                    
+                    // Type out this line
+                    const contentToType = line || ' ';  // Use space for empty lines
+                    for (let i = 0; i < contentToType.length; i++) {
+                        p.innerHTML = p.innerHTML + contentToType[i];
+                        await sleep(30);
+                    }
+                    scrollToBottom();
+                }
+            }
+            
+            scrollToBottom();
+        }
+
+        async function showInitialMenu() {
+            // Rebuild layout
+            const container = document.getElementById('game-container');
+            container.innerHTML = '';
+            
+            const followerDiv = document.createElement('div');
+            followerDiv.id = 'follower-count';
+            container.appendChild(followerDiv);
+            
+            const sceneDiv = document.createElement('div');
+            sceneDiv.id = 'scene-content';
+            container.appendChild(sceneDiv);
+            
+            const demonDiv = document.createElement('div');
+            demonDiv.id = 'demon-container';
+            container.appendChild(demonDiv);
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.id = 'result-container';
+            container.appendChild(resultDiv);
+            
+            const choicesDiv = document.createElement('div');
+            choicesDiv.id = 'choices-container';
+            container.appendChild(choicesDiv);
+            
+            const endLoopDiv = document.createElement('div');
+            endLoopDiv.id = 'end-loop';
+            container.appendChild(endLoopDiv);
+            
+            const lines = gameContent.split('\n');
+            
+            // Print everything before "Welcome to your online life!"
+            for (const line of lines) {
+                if (line === 'Welcome to your online life!') {
+                    break;
+                }
+                
+                if (line.trim()) {
+                    const p = document.createElement('div');
+                    p.className = 'scene-text';
+                    p.textContent = line;
+                    sceneDiv.appendChild(p);
+                    await sleep(Math.random() * 301 + 50);
+                } else {
+                    const p = document.createElement('div');
+                    p.className = 'scene-text';
+                    p.innerHTML = '&nbsp;';  // Non-breaking space for empty lines
+                    sceneDiv.appendChild(p);
+                }
+            }
+            
+            // 5 second pause
+            await sleep(5000);
+            
+            // Typewriter effect for welcome message
+            await typewriterEffect('Welcome to your online life!', sceneDiv, 50);
+            
+            // Empty line with typewriter
+            const emptyLine = document.createElement('div');
+            emptyLine.className = 'scene-text';
+            emptyLine.innerHTML = '&nbsp;';
+            sceneDiv.appendChild(emptyLine);
+            
+            // 3 second pause
+            await sleep(3000);
+            
+            // Typewriter effect for begin prompt
+            await typewriterEffect('A) Begin', sceneDiv, 50);
+            
+            scrollToBottom();
+            
+            // Wait for player to select A
+            const choice = await getPlayerChoice(['A']);
+            return choice;
+        }
+
+        async function getPlayerChoice(validChoices) {
+            return new Promise(async (resolve) => {
+                const choiceDiv = document.getElementById('choices-container');
+                choiceDiv.innerHTML = '';
+                
+                const prompt = document.createElement('div');
+                prompt.className = 'prompt';
+                
+                // Typewriter effect for the prompt text
+                const promptText = document.createElement('span');
+                promptText.className = 'prompt-text';
+                prompt.appendChild(promptText);
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.maxLength = 1;
+                prompt.appendChild(input);
+                
+                choiceDiv.appendChild(prompt);
+                
+                // Type out the prompt
+                const promptString = `Choose (${validChoices.join(' ')}): `;
+                for (let i = 0; i < promptString.length; i++) {
+                    promptText.textContent += promptString[i];
+                    await sleep(30);
+                }
+                
+                scrollToBottom();
+                input.focus();
+                
+                const handleInput = (e) => {
+                    if (e.key === 'Enter') {
+                        const choice = input.value.toUpperCase();
+                        input.removeEventListener('keydown', handleInput);
+                        input.removeEventListener('blur', handleBlur);
+                        choiceDiv.innerHTML = '';
+                        resolve(choice);
+                    }
+                };
+                
+                // Prevent unfocusing by re-focusing when blur happens
+                const handleBlur = () => {
+                    input.focus();
+                };
+                
+                input.addEventListener('keydown', handleInput);
+                input.addEventListener('blur', handleBlur);
+                scrollToBottom();
+            });
+        }
+
+        async function mainGame() {
+            while (true) {
+                // Check if at END scene
+                if (gameState.currentScene === 'END') {
+                    await printScene('END', gameState.followers, gameState.lastResultText);
+                    
+                    // Prompt for choice "A" to confirm
+                    await getPlayerChoice(['A']);
+                    
+                    // Move to end loop
+                    await showEndLoop();
+                    break;
+                }
+                
+                // Check if followers depleted
+                if (gameState.followers <= 0) {
+                    await printScene('END', 0, gameState.lastResultText);
+                    
+                    // Prompt for choice "A" to confirm
+                    await getPlayerChoice(['A']);
+                    
+                    // Move to end loop
+                    await showEndLoop();
+                    break;
+                }
+                
+                // Print current scene
+                await printScene(gameState.currentScene, gameState.followers, gameState.lastResultText);
+                
+                // Get valid options
+                const optionsText = sceneOptions[gameState.currentScene] || '';
+                const validChoices = [];
+                
+                const optionLines = optionsText.split('\n');
+                for (const optionLine of optionLines) {
+                    const match = optionLine.match(/GOTO\s+SCENE\s+[A-Z0-9]+\s+[\u274c\u2705]\s+([ABC])\./);
+                    if (match && !validChoices.includes(match[1])) {
+                        validChoices.push(match[1]);
+                    }
+                }
+                
+                // Reset result text
+                gameState.lastResultText = '';
+                
+                // Get user choice
+                const choice = await getPlayerChoice(validChoices);
+                
+                // Validate choice
+                if (!validChoices.includes(choice)) {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.textContent = 'Invalid choice. Please try again.';
+                    document.getElementById('scene-content').appendChild(resultDiv);
+                    await sleep(1000);
+                    continue;
+                }
+                
+                // Get next scene info
+                const sceneInfo = getNextScene(optionsText, choice);
+                
+                if (sceneInfo) {
+                    // Show demon face
+                    if (sceneInfo.emoji === '✅') {
+                        await showDemon(true);
+                    } else if (sceneInfo.emoji === '❌') {
+                        await showDemon(false);
+                    }
+                    
+                    // Apply follower changes
+                    gameState.followers += sceneInfo.followersChange;
+                    if (gameState.followers < 0) gameState.followers = 0;
+                    
+                    // Store result text
+                    if (sceneInfo.resultText) {
+                        gameState.lastResultText = sceneInfo.resultText;
+                    }
+                    
+                    // Move to next scene
+                    gameState.currentScene = sceneInfo.nextScene;
+                }
+            }
+        }
+
+        async function showEndLoop() {
+            // Rebuild layout
+            const container = document.getElementById('game-container');
+            container.innerHTML = '';
+            
+            let endDiv = document.createElement('div');
+            endDiv.id = 'end-loop';
+            container.appendChild(endDiv);
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = '--git-purged command not found.';
+            endDiv.appendChild(messageDiv);
+            
+            scrollToBottom();
+            
+            await sleep(3000);
+            endDiv.innerHTML = '';
+            
+            let lastLineCount = 0;
+            let loopCounter = 0;
+            
+            while (true) {
+                loopCounter++;
+                
+                // "YOU CANNOT EXIT" message every 30 iterations
+                if (loopCounter % 30 === 0) {
+                    const texts = ['YOU CANNOT EXIT', ' YOU CANNOT EXIT', '  YOU CANNOT EXIT'];
+                    for (const text of texts) {
+                        const textDiv = document.createElement('div');
+                        textDiv.className = 'end-loop-text';
+                        textDiv.textContent = text;
+                        endDiv.appendChild(textDiv);
+                        lastLineCount++;
+                    }
+                } else {
+                    const rand = Math.floor(Math.random() * 100) + 1;
+                    
+                    if (rand <= 95) {
+                        const textDiv = document.createElement('div');
+                        textDiv.className = 'end-loop-text';
+                        textDiv.textContent = ' Do not exit ';
+                        endDiv.appendChild(textDiv);
+                        lastLineCount++;
+                    } else {
+                        // Clear screen and show only the demon
+                        const gameContainer = document.getElementById('game-container');
+                        gameContainer.innerHTML = '';
+                        
+                        const demonDiv = document.createElement('div');
+                        demonDiv.id = 'demon-container';
+                        gameContainer.appendChild(demonDiv);
+                        
+                        // Show demon (it will use this container)
+                        const face = DEMON_FACE;
+                        const color = 'sad';
+                        
+                        for (let i = 0; i < 5; i++) {
+                            demonDiv.innerHTML = `<div class="demon-text ${color}">${face}</div>`;
+                            await sleep(50);
+                            demonDiv.innerHTML = '';
+                            await sleep(50);
+                        }
+                        
+                        // Rebuild endDiv after demon display
+                        gameContainer.innerHTML = '';
+                        const rebuiltEndDiv = document.createElement('div');
+                        rebuiltEndDiv.id = 'end-loop';
+                        gameContainer.appendChild(rebuiltEndDiv);
+                        endDiv = rebuiltEndDiv;
+                        
+                        lastLineCount++;
+                    }
+                }
+                // Clear old lines to prevent overflow
+                if (lastLineCount > 20) {
+                    endDiv.innerHTML = '';
+                    lastLineCount = 0;
+                }
+                
+                await sleep(200);
+                scrollToBottom();
+            }
+        }
+
+        async function main() {
+            try {
+                // Parse game file
+                parseGameFile();
+                
+                // Show initial menu
+                await showInitialMenu();
+                
+                // Run main game
+                await mainGame();
+                
+                // Show end loop
+                await showEndLoop();
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('scene-content').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Start the game
+        window.addEventListener('load', main);
+    </script>
+</body>
+</html>

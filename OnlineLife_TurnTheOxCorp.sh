@@ -85,7 +85,6 @@ show_initial_menu() {
         
         if [[ ! -z "$line" ]]; then
             echo -e "${RED}$line${RESET}"
-            # Random delay between 300ms and 1000ms
             delay_ms=$(( (RANDOM % 301) + 50 ))
             delay_s=$(printf "0.%03d" "$delay_ms")
             sleep "$delay_s"

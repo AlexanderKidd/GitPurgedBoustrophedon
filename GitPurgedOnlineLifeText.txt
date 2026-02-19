@@ -22,7 +22,7 @@ WARNING: null operator (?) is redundant <line 166:7>
 WARNING: potential infinite while loop closure <line 33:3>
 Runtime launched (code: 5 TTO_CLOSURE_EXCEPTION)
 
-TURN THE OX INDUSTRIES © 2026
+TURN THE OX CORP © 2026
 Release 0.0 / SN 20506730
 
 
