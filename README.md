@@ -1,11 +1,19 @@
 # Online Life By TurnTheOx Corp
 
 ## How To Run
-Run the OnlineLife_TurnTheOxCorp.sh script in your favorite shell (such as [git bash](https://git-scm.com/downloads))
+Download the index.html file and run it in your favorite browser.
+
+OR
+
+If you're a true haxx0r, run the OnlineLife_TurnTheOxCorp.sh script in your favorite shell (such as [git bash](https://git-scm.com/downloads)). Batteries not included.
 
 ## Changelog
+**0.0**
+* Branching prompts
+* Endgame scene
+* Better formatting and new stand-alone HTML version
 
-**9.3.25**
+**9.3.25a**
 * Changed fonts and colors.
 * No branching yet for prompts (i.e., there is only one storyline so far)
 
