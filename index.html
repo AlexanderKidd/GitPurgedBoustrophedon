@@ -714,6 +714,8 @@ A) Run command --git-purged on your profiles
                     // Apply follower changes
                     gameState.followers += sceneInfo.followersChange;
                     if (gameState.followers < 0) gameState.followers = 0;
+                    if( sceneInfo.nextScene === '1') gameState.followers = 100;
+                    if (gameState.followers > 9999) gameState.followers = 9999;
                     
                     // Store result text
                     if (sceneInfo.resultText) {

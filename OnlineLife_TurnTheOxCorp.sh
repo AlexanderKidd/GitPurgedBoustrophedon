@@ -334,6 +334,11 @@ main() {
         if (( followers <= 0 )); then
             followers=0  # Ensure it doesn't go negative
         fi
+
+        # Check if back to initial scene (scene 1) and reset followers to 100
+        if [[ "$next_scene" == "1" ]]; then
+            followers=100
+        fi
         
         # Move to next scene
         current_scene="$next_scene"
